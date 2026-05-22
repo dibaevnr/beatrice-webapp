@@ -4,6 +4,9 @@ tg.expand();
 tg.setHeaderColor("#0f001a");
 tg.setBackgroundColor("#0f001a");
 
+// Принудительное обновление версии
+console.log("Web App v2.1 loaded");
+
 async function init() {
   const user = tg.initDataUnsafe?.user;
   
