@@ -2,45 +2,45 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Beatrice • Панель</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
   <div class="container">
-    <!-- Header -->
     <div class="header">
       <div class="logo">👑 Beatrice</div>
       <div class="user-info" id="user-info">Загрузка...</div>
     </div>
 
-    <h1 class="title">Добро пожаловать</h1>
+    <h1 class="title">Личный кабинет</h1>
 
-    <!-- Menu Cards -->
+    <div class="profile-card" id="profile-card">
+      <img id="user-photo" class="user-photo" src="" alt="Фото">
+      <h2 id="user-name">Загрузка...</h2>
+      <p id="user-username">@username</p>
+    </div>
+
     <div class="menu-grid">
       <div class="card" onclick="navigate('profile')">
         <div class="card-icon">👤</div>
         <div class="card-title">Мой аккаунт</div>
-        <div class="card-subtitle">Профиль и информация</div>
       </div>
 
       <div class="card" onclick="navigate('subscriptions')">
         <div class="card-icon">📊</div>
         <div class="card-title">Мои подписки</div>
-        <div class="card-subtitle">Активные услуги</div>
       </div>
 
       <div class="card" onclick="navigate('status')">
         <div class="card-icon">📡</div>
-        <div class="card-title">Состояние</div>
-        <div class="card-subtitle">Подключение и статус</div>
+        <div class="card-title">Состояние соединения</div>
       </div>
 
       <div class="card" onclick="navigate('support')">
         <div class="card-icon">💬</div>
-        <div class="card-title">Поддержка</div>
-        <div class="card-subtitle">Написать администратору</div>
+	<div class="card-title">Написать Беатриске>/div>
       </div>
     </div>
   </div>
