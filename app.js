@@ -1,43 +1,67 @@
 const tg = window.Telegram.WebApp;
+const VERSION = "5.0";
 
 tg.expand();
 tg.setHeaderColor("#0f001a");
 tg.setBackgroundColor("#0f001a");
 
-// Принудительное обновление версии
-console.log("Web App v2.1 loaded");
-
 async function init() {
   const user = tg.initDataUnsafe?.user;
   
   if (user) {
-    // Имя
+    // Заполняем данные в "Мой аккаунт"
     document.getElementById('user-name').textContent = user.first_name + (user.last_name ? ' ' + user.last_name : '');
     document.getElementById('user-username').textContent = user.username ? '@' + user.username : 'Без username';
+    document.getElementById('user-id').textContent = `ID: ${user.id}`;
     document.getElementById('user-info').textContent = user.first_name;
 
-    // Фото пользователя
+    // Фото
+    const photoEl = document.getElementById('user-photo');
     if (user.photo_url) {
-      document.getElementById('user-photo').src = user.photo_url;
+      photoEl.src = user.photo_url;
     } else {
-      // Если нет фото — можно поставить заглушку
-      document.getElementById('user-photo').src = "https://via.placeholder.com/110?text=👤";
+      photoEl.src = "https://via.placeholder.com/120/4B0082/FFFFFF?text=👤";
     }
+
+    // Показываем кнопку "Пользователи" только админам (можно доработать)
+    // document.getElementById('users-card').style.display = 'block';
   }
 }
 
 function navigate(section) {
   tg.sendData(JSON.stringify({ action: section }));
-  
+
+  let title = "";
   let msg = "";
+
   switch(section) {
-    case 'profile': msg = "Открыт раздел Мой аккаунт"; break;
-    case 'subscriptions': msg = "Открыт раздел Мои подписки"; break;
-    case 'status': msg = "Открыт раздел Состояние соединения"; break;
-    case 'support': msg = "Открыт раздел Поддержка"; break;
+    case 'profile':
+      title = "Мой аккаунт";
+      msg = "Имя, ID и фото загружены из Telegram";
+      break;
+    case 'subscriptions':
+      title = "Мои подписки";
+      msg = "Здесь будет список ваших подписок";
+      break;
+    case 'status':
+      title = "Состояние соединения";
+      msg = "Здесь будет скорость и статус подключения";
+      break;
+    case 'support':
+      title = "Поддержка";
+      msg = "Напишите сообщение администратору";
+      break;
+    case 'users':
+      title = "Пользователи";
+      msg = "Управление пользователями (только для админа)";
+      break;
   }
-  
-  tg.showPopup({ title: "Раздел", message: msg, buttons: [{type: "ok"}] });
+
+  tg.showPopup({
+    title: title,
+    message: msg,
+    buttons: [{type: "ok"}]
+  });
 }
 
 document.addEventListener('DOMContentLoaded', init);
