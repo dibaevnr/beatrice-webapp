@@ -1,63 +1,81 @@
 const tg = window.Telegram.WebApp;
-const VERSION = "6.0";
+const VERSION = "6.1"; // увеличь версию при изменениях
 
 tg.expand();
 tg.setHeaderColor("#0f001a");
 tg.setBackgroundColor("#0f001a");
 
+// Инициализация пользователя
 async function init() {
   const user = tg.initDataUnsafe?.user;
-  
-  if (user) {
-    document.getElementById('user-name').textContent = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-    document.getElementById('user-username').textContent = user.username ? '@' + user.username : 'Без username';
-    document.getElementById('user-id').textContent = `ID: ${user.id}`;
-    document.getElementById('user-info').textContent = user.first_name;
+ 
+  если (пользователь) {
+    документ.getElementById('имя пользователя').текстСодержание = пользователь.имя_имя + (пользователь.фамилия_имя ? ' ' + пользователь.фамилия_имя : '');
+    документ.getElementById('имя пользователя-пользователя').текстСодержание = пользователь.имя пользователя ? '@' + пользователь.имя пользователя : «Имя пользователя Без»;
+    документ.getElementById('идентификатор пользователя').текстСодержание = `ИД: ${пользователь.идентификатор}`;
+    документ.getElementById('информация о пользователе').текстСодержание = пользователь.имя_имя;
 
-    const photoEl = document.getElementById('user-photo');
-    if (user.photo_url) {
-      photoEl.src = user.photo_url;
-    } else {
-      photoEl.src = "https://via.placeholder.com/120/4B0082/FFFFFF?text=👤";
+    константа фотоЭл = документ.getElementById('фото пользователя');
+    если (пользователь.фото_url) {
+      фотоЭл.источник = пользователь.foto_url;
+    } еще {
+      фотоЭл.источник = "https://via.placeholder.com/120/4B0082/FFFFFF?text=👤";
     }
   }
 }
 
-// Отправка данных в бот
-function navigate(section) {
-  tg.sendData(JSON.stringify({ 
-    action: section,
-    version: VERSION,
-    timestamp: Date.now()
+// Основная функция перехода
+функция навигация(раздел) {
+  // Отправляем данные в бот
+  тг.отправитьДанные(JSON.стринглиф({
+    действие: раздел,
+    версия: ВЕРСИЯ,
+    отметка времени: Дата.сейчас()
   }));
 
-  let title = "";
-  let message = "";
+  // Показываем всплывающее окно
+  позволять заголовок = "Раздел открыт";
+  позволять сообщение = `Вы открыли раздел: ${раздел}`;
 
-  switch(section) {
-    case 'profile':
-      title = "Мой аккаунт";
-      message = "Данные профиля отправлены боту";
-      break;
-    case 'subscriptions':
-      title = "Мои подписки";
-      message = "Запрос списка подписок отправлен";
-      break;
-    case 'status':
-      title = "Состояние соединения";
-      message = "Запрос скорости и статуса отправлен";
-      break;
-    case 'support':
-      title = "Поддержка";
-      message = "Переход в поддержку";
-      break;
+  выключатель(раздел) {
+    случай 'профиль':
+      заголовок = "Мой аккаунт";
+      сообщение = "Данные профиля отправлены боту";
+      перерыв;
+    случай 'подписки':
+      заголовок = "Мои подписки";
+      сообщение = "Запрос списка подписок отправлен";
+      перерыв;
+    случай 'статус':
+      заголовок = "Состояние соединения";
+      сообщение = "Запрос скорости и статуса отправлен";
+      перерыв;
+    случай 'поддержка':
+      заголовок = "Поддержка";
+      сообщение = "Переход в поддержку";
+      перерыв;
   }
 
-  tg.showPopup({
-    title: title,
-    message: message,
-    buttons: [{type: "ok"}]
+  тг.показатьВсплывающее окно({
+    заголовок: заголовок,
+    сообщение: сообщение,
+    кнопки: [{тип: "ок"}]
   });
 }
 
-document.addEventListener('DOMContentLoaded', init);
+// === Привязка кликов к кнопкам ===
+документ.addEventListener(«DOMContentLoaded», () => {
+  инициализировать();
+
+  //Находим все элементы с классом .nav-item или раздел данных
+  константа navItems = документ.querySelectorAll('.nav-item, [раздел данных]');
+
+  navItems.дляКаждого(элемент => {
+    элемент.addEventListener('нажмите', () => {
+      константа раздел = элемент.набор данных.раздел || элемент.идентификатор; //берем из раздела данных или идентификатор
+      если (раздел) {
+        навигация(раздел);
+      }
+    });
+  });
+});
