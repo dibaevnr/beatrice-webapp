@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Beatrice • Панель</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=6.1">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
@@ -13,7 +13,7 @@
       <div class="logo">👑 Beatrice</div>
       <div class="user-info" id="user-info">Загрузка...</div>
     </div>
-
+    
     <h1 class="title">Личный кабинет</h1>
 
     <!-- Профиль -->
@@ -25,28 +25,28 @@
     </div>
 
     <div class="menu-grid">
-      <div class="card" onclick="navigate('profile')">
+      <div class="card" data-section="profile">
         <div class="card-icon">👤</div>
         <div class="card-title">Моя страница</div>
       </div>
-
-      <div class="card" onclick="navigate('subscriptions')">
+      
+      <div class="card" data-section="subscriptions">
         <div class="card-icon">📊</div>
         <div class="card-title">Мои подписки</div>
       </div>
-
-      <div class="card" onclick="navigate('status')">
+      
+      <div class="card" data-section="status">
         <div class="card-icon">📡</div>
         <div class="card-title">Состояние соединения</div>
       </div>
-
-      <div class="card" onclick="navigate('support')">
+      
+      <div class="card" data-section="support">
         <div class="card-icon">💬</div>
         <div class="card-title">Написать Беатриске</div>
       </div>
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=6.1"></script>
 </body>
 </html>
