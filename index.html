@@ -1,88 +1,80 @@
 <!DOCTYPE html>
-<html див<"ру"
-<голова>
-  <мета набор символов="УТФ-8">
-  <мета имя="область просмотра" содержание="ширина=ширина устройства, начальный масштаб=1,0, максимальный масштаб=1,0, масштабируемый пользователем=нет">
-  <заголовок>Бётрис • 3X-UI</заголовок>
-  <связь отн="таблица стилей" href="стиль.css?v=11,5">
-  <сценарий источник="https://telegram.org/js/telegram-web-app.js"></сценарий>
-</голова>
-<тело>
-  <див класс="контейнер">
-    <див класс="заголовок">
-      <див класс="логотип">👑 Бот-хуёт</див>
-      <див идентификатор="информация о пользователе">Загрузка...</див>
-    </див>
-
-    <ч1 класс="название">основной экран</ч1>
-
-    <!-- Профиль -->
-    <див класс="профильная карточка">
-      <имг идентификатор="фото пользователя" класс="фото пользователя" источник="" альт="Фото">
-      <h2 идентификатор="имя пользователя">Загрузка...</h2>
-      <p идентификатор="имя пользователя">@имя пользователя</p>
-      <p идентификатор="идентификатор пользователя">ID: —</p>
-    </див>
-
-    <!-- Статистика -->
-    <див класс="статистическая сетка">
-      <див класс="статистическая карта">
-        <див класс="стат-номер" идентификатор="всего пользователей">0</див>
-        <див класс="стат-метка">Всего пользователей</див>
-      </див>
-      <див класс="статистическая карта">
-        <див класс="стат-номер" идентификатор="онлайн-пользователи">0</див>
-        <див класс="стат-метка">Онлайн</див>
-      </див>
-    </див>
-
-    <див класс="меню-сетка">
-      <див класс="карта" раздел данных="профиль">
-        <див класс="карточный значок">👤</див>
-        <див класс="название карты">Моя страница</див>
-      </див>
-      
-      <див класс="карта" раздел данных="пользователи">
-        <див класс="карточный значок">👥</див>
-        <див класс="название карты">Пользователи</див>
-      </див>
-      
-      <див класс="карта" раздел данных="статус">
-        <див класс="карточный значок">📡</див>
-        <див класс="название карты">Статус сервера</див>
-      </див>
-      
-      <див класс="карта" раздел данных="поддержка">
-        <див класс="карточный значок">💬</див>
-        <див класс="название карты">Поддержка</див>
-      </див>
-    </див>
-
-    <!-- Секция Пользователи -->
-    <див идентификатор="раздел пользователей" класс="раздел">
-      <h2>👥 Действующие пользователи</h2>
-      <div id="users-list" class="users-list"></div>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Beatrice вЂў 3X-UI</title>
+  <link rel="stylesheet" href="style.css?v=11.0">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">рџ‘‘ Beatrice</div>
+      <div id="user-info">Р—Р°РіСЂСѓР·РєР°...</div>
     </div>
 
-    <!-- Секция Поддержка -->
-    <div id="support-section" class="section">
-      <div class="section-header">
-        <h2>💬 Поддержка пользователей</h2>
+    <h1 class="title">РџР°РЅРµР»СЊ 3X-UI</h1>
+
+    <!-- РџСЂРѕС„РёР»СЊ -->
+    <div class="profile-card">
+      <img id="user-photo" class="user-photo" src="" alt="Р¤РѕС‚Рѕ">
+      <h2 id="user-name">Р—Р°РіСЂСѓР·РєР°...</h2>
+      <p id="user-username">@username</p>
+      <p id="user-id">ID: вЂ”</p>
+    </div>
+
+    <!-- РЎС‚Р°С‚РёСЃС‚РёРєР° -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="total-users">0</div>
+        <div class="stat-label">Р’СЃРµРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№</div>
       </div>
-      <div id="support-users-list" class="users-list"></div>
+      <div class="stat-card">
+        <div class="stat-number" id="online-users">0</div>
+        <div class="stat-label">РћРЅР»Р°Р№РЅ</div>
+      </div>
+    </div>
+
+    <div class="menu-grid">
+      <div class="card" data-section="profile">
+        <div class="card-icon">рџ‘¤</div>
+        <div class="card-title">РњРѕСЏ СЃС‚СЂР°РЅРёС†Р°</div>
+      </div>
       
-      <div id="message-box" class="message-box">
-        <p><strong>Сообщение для:</strong> <span id="selected-user"></span></p>
-        <textarea id="support-message" rows="4" placeholder="Введите сообщение..."></textarea>
-        <div class="btn-group">
-          <button onclick="sendSupportMessage()" class="send-btn">Отправить</button>
-          <button onclick="cancelMessage()" class="cancel-btn">Отмена</button>
-        </div>
+      <div class="card" data-section="users">
+        <div class="card-icon">рџ‘Ґ</div>
+        <div class="card-title">РџРѕР»СЊР·РѕРІР°С‚РµР»Рё</div>
+      </div>
+      
+      <div class="card" data-section="status">
+        <div class="card-icon">рџ“Ў</div>
+        <div class="card-title">РЎС‚Р°С‚СѓСЃ СЃРµСЂРІРµСЂР°</div>
+      </div>
+      
+      <div class="card" data-section="support">
+        <div class="card-icon">рџ’¬</div>
+        <div class="card-title">РџРѕРґРґРµСЂР¶РєР°</div>
+      </div>
+    </div>
+
+    <!-- РЎРµРєС†РёСЏ РџРѕР»СЊР·РѕРІР°С‚РµР»Рё (РїСЂРѕРґРІРёРЅСѓС‚Р°СЏ) -->
+    <div id="users-section" class="section">
+      <div class="section-header">
+        <h2>рџ‘Ґ Р”РµР№СЃС‚РІСѓСЋС‰РёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»Рё</h2>
+        <button class="refresh-btn" onclick="loadUsers()">рџ”„ РћР±РЅРѕРІРёС‚СЊ</button>
+      </div>
+      <div id="users-list" class="users-list">
+        <!-- Р—Р°РїРѕР»РЅСЏРµС‚СЃСЏ С‡РµСЂРµР· JS -->
       </div>
     </div>
 
   </div>
 
-  <script src="app.js?v=11.5"></script>
+  <script src="app.js?v=11.0"></script>
 </body>
 </html>
+
+
+
+
