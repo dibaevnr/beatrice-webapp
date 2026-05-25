@@ -1,13 +1,14 @@
 const tg = window.Telegram.WebApp;
-const VERSION = "11.2";
+const VERSION = "11.3";
 
 tg.expand();
 tg.setHeaderColor("#0f001a");
 tg.setBackgroundColor("#0f001a");
 
-let allUsers = []; // Сюда будут приходить пользователи из 3x-UI
+let allUsers = [];
+let selectedUser = null;
 
-// Инициализация (текущий Telegram пользователь)
+// Инициализация Telegram пользователя
 function initTelegramUser() {
   const user = tg.initDataUnsafe?.user;
   if (user) {
@@ -33,75 +34,117 @@ function navigate(section) {
 
   if (section === 'users') {
     document.getElementById('users-section').style.display = 'block';
-    document.getElementById('users-list').innerHTML = '<p class="loading">🔄 Запрашиваю пользователей из 3x-UI...</p>';
-  } else {
-    тг.показатьВсплывающее окно({
-      заголовок: "Запрос отправлен",
-      сообщение: `Раздел "${раздел}" — данные отправлены боту`,
-      кнопки: [{тип: "ок"}]
+    document.getElementById('users-list').innerHTML = '<p class="loading">🔄 Загрузка пользователей...</p>';
+  } 
+  else if (section === 'support') {
+    document.getElementById('support-section').style.display = 'block';
+    document.getElementById('support-users-list').innerHTML = '<p class="loading">🔄 Загрузка списка для поддержки...</p>';
+    loadSupportUsers();
+  } 
+  else {
+    tg.showPopup({
+      title: "Запрос отправлен",
+      message: `Раздел "${section}" открыт`,
+      buttons: [{type: "ok"}]
     });
   }
 }
 
-// === Получение данных из 3x-UI от бота ===
-тг.onEvent('webAppDataReceived', (событие) => {
-  пытаться {
-    константа ответ = JSON.анализировать(событие.данные);
+// Загрузка пользователей для поддержки
+function loadSupportUsers() {
+  tg.sendData(JSON.stringify({ action: "get_users", version: VERSION }));
+}
 
-    если (ответ.действие === 'данные_пользователей' || ответ.тип === «пользователи») {
-      всеПользователи = ответ.пользователи || ответ.данные || [];
-
-      // Обновляем статистику
-      документ.getElementById('всего пользователей').текстСодержание = всеПользователи.длина;
+// Приём данных от бота
+tg.onEvent('webAppDataReceived', (event) => {
+  try {
+    const response = JSON.parse(event.data);
+    
+    if (response.action === 'users_data' || response.type === 'users') {
+      allUsers = response.users || response.data || [];
       
-      константа онлайнСчет = всеПользователи.фильтр(u => u.онлайн === истинный || u.статус === "онлайн").длина;
-      документ.getElementById(«онлайн-пользователи»).текстСодержание = онлайнСчет;
+      // Обновляем статистику на главном экране
+      document.getElementById('total-users').textContent = allUsers.length;
+      const online = allUsers.filter(u => u.online).length;
+      document.getElementById('online-users').textContent = online;
 
-      // Рендерим список
-      renderUsers(всеПользователи);
+      // Если открыт раздел поддержки — показываем список
+      if (document.getElementById('support-section').style.display !== 'none') {
+        renderSupportUsers(allUsers);
+      }
     }
-  } ловить (e) {
-    консоль.ошибка("Ошибка при обработке данных от бота:", e);
-    документ.getElementById('список пользователей').внутреннийHTML = '<p class="empty">Ошибка обработки данных</p>';
+  } catch (e) {
+    console.error(e);
   }
 });
 
-функция renderUsers(пользователи) {
-  константа контейнер = документ.getElementById('список пользователей');
-  
-  если (!пользователи || пользователи.длина === 0) {
-    контейнер.внутреннийHTML = '<p class="empty">Нет подробнее в 3x-UI подробнее</p>';
-    возвращаться;
+function renderSupportUsers(users) {
+  const container = document.getElementById('support-users-list');
+  if (!users || users.length === 0) {
+    container.innerHTML = '<p class="empty">Нет пользователей</p>';
+    return;
   }
 
-  позволять html = '';
-  пользователи.дляКаждого(пользователь => {
-    константа истечение срока действия = пользователь.дата_истечения_ || пользователь.истечение срока действия ? новый Дата(пользователь.дата_истечения_ || пользователь.истечение срока действия * 1000).toLocaleDateString('ру-РУ') : 'Без срока';
-    
+  let html = '';
+  users.forEach(user => {
     html += `
-      <div class= "user-item">
-        <div class= "user-info">
-          <сильный>${пользователь.электронная почта || пользователь.имя пользователя || «Без электронная почта»}</сильный><br>
-          <маленький>${пользователь.ууид ? 'UUID: ' + пользователь.ууид.подстрока(0,8)+'...' : ''}</маленький>
-        </див>
-        <div class="статус пользователя ${пользователь.онлайн || пользователь.статус === «онлайн» ? «онлайн» : 'офлайн'}">
-          ${пользователь.онлайн || пользователь.статус === «онлайн» ? '● Онлайн' : '○ Офлайн'}
-        </див>
-      </див>
+      <div class="user-item" onclick="selectUser(${JSON.stringify(user)})">
+        <div class="user-info">
+          <strong>${user.email || user.username || 'Без имени'}</strong><br>
+          <small>ID: ${user.id || '—'}</small>
+        </div>
+        <div class="user-status ${user.online ? 'online' : 'offline'}">
+          ${user.online ? '● Онлайн' : '○ Офлайн'}
+        </div>
+      </div>
     `;
   });
-  
-  контейнер.внутреннийHTML = html;
+  container.innerHTML = html;
 }
 
-// Запуск
-документ.addEventListener(«DOMContentLoaded», () => {
+function selectUser(user) {
+  selectedUser = user;
+  document.getElementById('selected-user').textContent = user.email || user.username || 'Пользователь';
+  document.getElementById('message-box').style.display = 'block';
+  document.getElementById('support-message').focus();
+}
+
+function sendSupportMessage() {
+  const message = document.getElementById('support-message').value.trim();
+  if (!message || !selectedUser) return;
+
+  tg.sendData(JSON.stringify({
+    action: "send_support_message",
+    user_id: selectedUser.id || selectedUser.email,
+    username: selectedUser.email || selectedUser.username,
+    message: message,
+    timestamp: Date.now()
+  }));
+
+  tg.showPopup({
+    title: "Сообщение отправлено",
+    message: `Сообщение пользователю ${selectedUser.email || selectedUser.username} отправлено`,
+    buttons: [{type: "ok"}]
+  });
+
+  // Очистка
+  document.getElementById('support-message').value = '';
+  document.getElementById('message-box').style.display = 'none';
+}
+
+function cancelMessage() {
+  document.getElementById('message-box').style.display = 'none';
+  document.getElementById('support-message').value = '';
+}
+
+// Инициализация
+document.addEventListener('DOMContentLoaded', () => {
   initTelegramUser();
 
-  документ.querySelectorAll('.карта').дляКаждого(карта => {
-    карта.addEventListener('нажмите', () => {
-      константа раздел = карта.набор данных.раздел;
-      если (раздел) навигация(раздел);
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', () => {
+      const section = card.dataset.section;
+      if (section) navigate(section);
     });
   });
 });
