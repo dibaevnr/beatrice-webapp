@@ -1,5 +1,5 @@
 const tg = window.Telegram.WebApp;
-const VERSION = "11.0";
+const VERSION = "11.1";
 
 tg.expand();
 tg.setHeaderColor("#0f001a");
@@ -7,7 +7,7 @@ tg.setBackgroundColor("#0f001a");
 
 let allUsers = [];
 
-// Инициализация
+// Инициализация пользователя
 function init() {
   const user = tg.initDataUnsafe?.user;
   if (user) {
@@ -23,44 +23,48 @@ function init() {
 
 // Навигация
 function navigate(section) {
-  tg.sendData(JSON.stringify({ action: section, version: VERSION, timestamp: Date.now() }));
+  tg.sendData(JSON.stringify({ 
+    action: section, 
+    version: VERSION,
+    timestamp: Date.now() 
+  }));
 
   document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
 
   if (section === 'users') {
     document.getElementById('users-section').style.display = 'block';
-    loadUsers();
+    // Показываем загрузку
+    document.getElementById('users-list').innerHTML = '<p class="loading">🔄 Запрос данных из 3x-UI...</p>';
   } else {
     tg.showPopup({
       title: "Уведомление",
-      message: `Раздел "${section}" открыт. Ожидаем ответ от бота...`,
+      message: `Запрос в раздел "${section}" отправлен`,
       buttons: [{type: "ok"}]
     });
   }
 }
 
-// Загрузка пользователей (заглушка + реальный запрос)
-function loadUsers() {
-  const list = document.getElementById('users-list');
-  list.innerHTML = '<p class="loading">🔄 Загрузка пользователей...</p>';
+// === ПРИЁМ ДАННЫХ ОТ БОТА ===
+tg.onEvent('webAppDataReceived', (data) => {
+  try {
+    const response = JSON.parse(data.data);
+    
+    if (response.action === 'users_data') {
+      allUsers = response.users || [];
+      
+      // Обновляем статистику
+      document.getElementById('total-users').textContent = allUsers.length;
+      
+      const online = allUsers.filter(u => u.online === true).length;
+      document.getElementById('online-users').textContent = online;
 
-  tg.sendData(JSON.stringify({ action: "get_users", version: VERSION }));
-
-  // Заглушка до ответа от бота
-  setTimeout(() => {
-    if (list.innerHTML.includes("Загрузка")) {
-      list.innerHTML = `
-        <p class="empty">Бот пока не отправил данные.<br>Нажмите "Обновить"</p>
-      `;
+      // Рендер списка
+      renderUsers(allUsers);
     }
-  }, 3000);
-}
-
-// Функция для приёма данных от бота (вызывать из бота через sendData)
-function receiveUsers(users) {
-  allUsers = users;
-  renderUsers(users);
-}
+  } catch (e) {
+    console.error("Ошибка обработки данных:", e);
+  }
+});
 
 function renderUsers(users) {
   const list = document.getElementById('users-list');
@@ -71,11 +75,12 @@ function renderUsers(users) {
 
   let html = '';
   users.forEach(u => {
+    const expiry = u.expiry ? new Date(u.expiry).toLocaleDateString('ru-RU') : 'Без срока';
     html += `
       <div class="user-item">
         <div class="user-info">
-          <strong>${u.username || 'Без имени'}</strong><br>
-          <small>ID: ${u.id} • ${u.expiry || 'Без срока'}</small>
+          <strong>${u.email || u.username || 'Без имени'}</strong><br>
+          <small>ID: ${u.id || '—'} • ${expiry}</small>
         </div>
         <div class="user-status ${u.online ? 'online' : 'offline'}">
           ${u.online ? '● Онлайн' : '○ Офлайн'}
@@ -86,7 +91,7 @@ function renderUsers(users) {
   list.innerHTML = html;
 }
 
-// Инициализация событий
+// Инициализация кликов
 document.addEventListener('DOMContentLoaded', () => {
   init();
 
