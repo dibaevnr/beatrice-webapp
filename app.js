@@ -1,14 +1,14 @@
 const tg = window.Telegram.WebApp;
-const VERSION = "11.1";
+const VERSION = "11.2";
 
 tg.expand();
 tg.setHeaderColor("#0f001a");
 tg.setBackgroundColor("#0f001a");
 
-let allUsers = [];
+let allUsers = []; // Сюда будут приходить пользователи из 3x-UI
 
-// Инициализация пользователя
-function init() {
+// Инициализация (текущий Telegram пользователь)
+function initTelegramUser() {
   const user = tg.initDataUnsafe?.user;
   if (user) {
     document.getElementById('user-name').textContent = user.first_name || 'Администратор';
@@ -33,72 +33,75 @@ function navigate(section) {
 
   if (section === 'users') {
     document.getElementById('users-section').style.display = 'block';
-    // Показываем загрузку
-    document.getElementById('users-list').innerHTML = '<p class="loading">🔄 Запрос данных из 3x-UI...</p>';
+    document.getElementById('users-list').innerHTML = '<p class="loading">🔄 Запрашиваю пользователей из 3x-UI...</p>';
   } else {
-    tg.showPopup({
-      title: "Уведомление",
-      message: `Запрос в раздел "${section}" отправлен`,
-      buttons: [{type: "ok"}]
+    тг.показатьВсплывающее окно({
+      заголовок: "Запрос отправлен",
+      сообщение: `Раздел "${раздел}" — данные отправлены боту`,
+      кнопки: [{тип: "ок"}]
     });
   }
 }
 
-// === ПРИЁМ ДАННЫХ ОТ БОТА ===
-tg.onEvent('webAppDataReceived', (data) => {
-  try {
-    const response = JSON.parse(data.data);
-    
-    if (response.action === 'users_data') {
-      allUsers = response.users || [];
-      
-      // Обновляем статистику
-      document.getElementById('total-users').textContent = allUsers.length;
-      
-      const online = allUsers.filter(u => u.online === true).length;
-      document.getElementById('online-users').textContent = online;
+// === Получение данных из 3x-UI от бота ===
+тг.onEvent('webAppDataReceived', (событие) => {
+  пытаться {
+    константа ответ = JSON.анализировать(событие.данные);
 
-      // Рендер списка
-      renderUsers(allUsers);
+    если (ответ.действие === 'данные_пользователей' || ответ.тип === «пользователи») {
+      всеПользователи = ответ.пользователи || ответ.данные || [];
+
+      // Обновляем статистику
+      документ.getElementById('всего пользователей').текстСодержание = всеПользователи.длина;
+      
+      константа онлайнСчет = всеПользователи.фильтр(u => u.онлайн === истинный || u.статус === "онлайн").длина;
+      документ.getElementById(«онлайн-пользователи»).текстСодержание = онлайнСчет;
+
+      // Рендерим список
+      renderUsers(всеПользователи);
     }
-  } catch (e) {
-    console.error("Ошибка обработки данных:", e);
+  } ловить (e) {
+    консоль.ошибка("Ошибка при обработке данных от бота:", e);
+    документ.getElementById('список пользователей').внутреннийHTML = '<p class="empty">Ошибка обработки данных</p>';
   }
 });
 
-function renderUsers(users) {
-  const list = document.getElementById('users-list');
-  if (!users || users.length === 0) {
-    list.innerHTML = '<p class="empty">Список пользователей пуст</p>';
-    return;
+функция renderUsers(пользователи) {
+  константа контейнер = документ.getElementById('список пользователей');
+  
+  если (!пользователи || пользователи.длина === 0) {
+    контейнер.внутреннийHTML = '<p class="empty">Нет подробнее в 3x-UI подробнее</p>';
+    возвращаться;
   }
 
-  let html = '';
-  users.forEach(u => {
-    const expiry = u.expiry ? new Date(u.expiry).toLocaleDateString('ru-RU') : 'Без срока';
+  позволять html = '';
+  пользователи.дляКаждого(пользователь => {
+    константа истечение срока действия = пользователь.дата_истечения_ || пользователь.истечение срока действия ? новый Дата(пользователь.дата_истечения_ || пользователь.истечение срока действия * 1000).toLocaleDateString('ру-РУ') : 'Без срока';
+    
     html += `
-      <div class="user-item">
-        <div class="user-info">
-          <strong>${u.email || u.username || 'Без имени'}</strong><br>
-          <small>ID: ${u.id || '—'} • ${expiry}</small>
-        </div>
-        <div class="user-status ${u.online ? 'online' : 'offline'}">
-          ${u.online ? '● Онлайн' : '○ Офлайн'}
-        </div>
-      </div>
+      <div class= "user-item">
+        <div class= "user-info">
+          <сильный>${пользователь.электронная почта || пользователь.имя пользователя || «Без электронная почта»}</сильный><br>
+          <маленький>${пользователь.ууид ? 'UUID: ' + пользователь.ууид.подстрока(0,8)+'...' : ''}</маленький>
+        </див>
+        <div class="статус пользователя ${пользователь.онлайн || пользователь.статус === «онлайн» ? «онлайн» : 'офлайн'}">
+          ${пользователь.онлайн || пользователь.статус === «онлайн» ? '● Онлайн' : '○ Офлайн'}
+        </див>
+      </див>
     `;
   });
-  list.innerHTML = html;
+  
+  контейнер.внутреннийHTML = html;
 }
 
-// Инициализация кликов
-document.addEventListener('DOMContentLoaded', () => {
-  init();
+// Запуск
+документ.addEventListener(«DOMContentLoaded», () => {
+  initTelegramUser();
 
-  document.querySelectorAll('.card').forEach(card => {
-    card.addEventListener('click', () => {
-      const section = card.dataset.section;
-      if (section) navigate(section);
+  документ.querySelectorAll('.карта').дляКаждого(карта => {
+    карта.addEventListener('нажмите', () => {
+      константа раздел = карта.набор данных.раздел;
+      если (раздел) навигация(раздел);
     });
   });
 });
