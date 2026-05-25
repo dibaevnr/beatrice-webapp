@@ -1,40 +1,99 @@
-константа тг = окно.Телеграмма.Веб-приложение;
+const tg = window.Telegram.WebApp;
+const VERSION = "11.0";
 
-тг.расширять();
-тг.setHeaderColor("#0f001a");
-тг.setBackgroundColor("#0f001a");
+tg.expand();
+tg.setHeaderColor("#0f001a");
+tg.setBackgroundColor("#0f001a");
 
-// Принудительное обновление версии
-консоль.бревно("Веб-приложенье v2.1 загружено");
+let allUsers = [];
 
-асинхронный функция инициализировать() {
-  константа пользователь = тг.initDataUnsafe?.пользователь;
+// Инициализация
+function init() {
+  const user = tg.initDataUnsafe?.user;
+  if (user) {
+    document.getElementById('user-name').textContent = user.first_name || 'Администратор';
+    document.getElementById('user-username').textContent = user.username ? '@' + user.username : 'Нет username';
+    document.getElementById('user-id').textContent = `ID: ${user.id}`;
+    document.getElementById('user-info').textContent = user.first_name || 'Админ';
 
-  если (пользователь) {
-    // Имя
-    документ.getElementById('имя пользователя').текстСодержание = пользователь.имя_имя + (пользователь.фамилия_имя ? ' ' + пользователь.фамилия_имя : '');
-    документ.getElementById('имя пользователя-пользователя').текстСодержание = пользователь.имя пользователя ? '@' + пользователь.имя пользователя : «Имя пользователя Без»;
-    документ.getElementById('информация о пользователе').текстСодержание = пользователь.имя_имя;
-
-    // Фото пользователя
-    если (пользователь.foto_url) {
-      документ.getElementById('фото пользователя').источник = пользователь.foto_url;
-    } еще {
-      // Если нет фото — можно поставить заглушку
-      документ.getElementById('фото пользователя').источник = "https://via.placeholder.com/110?text=👤";
-    }
+    const photo = document.getElementById('user-photo');
+    photo.src = user.photo_url || "https://via.placeholder.com/120/4B0082/FFFFFF?text=👑";
   }
 }
 
-функция навигация(раздел) {
-  тг.отправитьДанные(JSON.стринглиф({ действие: раздел }));
+// Навигация
+function navigate(section) {
+  tg.sendData(JSON.stringify({ action: section, version: VERSION, timestamp: Date.now() }));
 
-  позволять сообщение = "";
-  выключатель(раздел) {
-    случай 'профиль': сообщение = "Открыт раздел Мой аккаунт"; перерыв;
-    случай 'подписки': сообщение = "Открыт раздел Мои подписки"; перерыв;
-    случай 'статус': сообщение = "Открыт раздел Состояние соединения"; перерыв;
-    случай 'поддержка': сообщение = "Открыт раздел Поддержка"; перерыв;
+  document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+
+  if (section === 'users') {
+    document.getElementById('users-section').style.display = 'block';
+    loadUsers();
+  } else {
+    tg.showPopup({
+      title: "Уведомление",
+      message: `Раздел "${section}" открыт. Ожидаем ответ от бота...`,
+      buttons: [{type: "ok"}]
+    });
+  }
+}
+
+// Загрузка пользователей (заглушка + реальный запрос)
+function loadUsers() {
+  const list = document.getElementById('users-list');
+  list.innerHTML = '<p class="loading">🔄 Загрузка пользователей...</p>';
+
+  tg.sendData(JSON.stringify({ action: "get_users", version: VERSION }));
+
+  // Заглушка до ответа от бота
+  setTimeout(() => {
+    if (list.innerHTML.includes("Загрузка")) {
+      list.innerHTML = `
+        <p class="empty">Бот пока не отправил данные.<br>Нажмите "Обновить"</p>
+      `;
+    }
+  }, 3000);
+}
+
+// Функция для приёма данных от бота (вызывать из бота через sendData)
+function receiveUsers(users) {
+  allUsers = users;
+  renderUsers(users);
+}
+
+function renderUsers(users) {
+  const list = document.getElementById('users-list');
+  if (!users || users.length === 0) {
+    list.innerHTML = '<p class="empty">Список пользователей пуст</p>';
+    return;
   }
 
-  тг.показатьВсплывающее окно({ заголовок: "Раздел", сообщение: сообщение, кнопки: [{тип: "ок"}] });
+  let html = '';
+  users.forEach(u => {
+    html += `
+      <div class="user-item">
+        <div class="user-info">
+          <strong>${u.username || 'Без имени'}</strong><br>
+          <small>ID: ${u.id} • ${u.expiry || 'Без срока'}</small>
+        </div>
+        <div class="user-status ${u.online ? 'online' : 'offline'}">
+          ${u.online ? '● Онлайн' : '○ Офлайн'}
+        </div>
+      </div>
+    `;
+  });
+  list.innerHTML = html;
+}
+
+// Инициализация событий
+document.addEventListener('DOMContentLoaded', () => {
+  init();
+
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', () => {
+      const section = card.dataset.section;
+      if (section) navigate(section);
+    });
+  });
+});
