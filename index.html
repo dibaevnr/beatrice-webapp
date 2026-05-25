@@ -1,39 +1,63 @@
 <!DOCTYPE html>
-<html язык="ру">
-<голова>
-  <мета набор символов="УТФ-8">
-  <мета имя="область просмотра" содержание="ширина=ширина устройства, начальный масштаб=1.0">
-  <заголовок>Беатрис • Панель</заголовок>
-  <связь отн="таблица стилей" href="стиль.css">
-  <сценарий источник="https://telegram.org/js/telegram-web-app.js"></сценарий>
-</голова>
-<тело>
-  <див класс="контейнер">
-    <див класс="заголовок">
-      <див класс="логотип">👑 Беатрис</див>
-      <див класс="информация о пользователе" идентификатор="информация о пользователе">Загрузка...</див>
-    </див>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Beatrice • Панель</title>
+  <link rel="stylesheet" href="style.css?v=9.4">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">👑 Beatrice</div>
+      <div class="user-info" id="user-info">Загрузка...</div>
+    </div>
+    
+    <h1 class="title">Личный кабинет</h1>
 
-    <ч1 класс="название">Личный кабинет</ч1>
+    <!-- Профиль -->
+    <div class="profile-card">
+      <img id="user-photo" class="user-photo" src="" alt="Фото">
+      <h2 id="user-name">Загрузка...</h2>
+      <p id="user-username">@username</p>
+      <p id="user-id">ID: —</p>
+    </div>
 
-    <див класс="профильная карточка" идентификатор="профильная карточка">
-      <имг идентификатор="фото пользователя" класс="фото пользователя" источник="" альт="Фото">
-      <h2 идентификатор="имя пользователя">Загрузка...</h2>
-      <p идентификатор="имя пользователя">@имя пользователя</p>
-    </див>
+    <div class="menu-grid">
+      <div class="card" data-section="profile">
+        <div class="card-icon">👤</div>
+        <div class="card-title">Моя страница</div>
+      </div>
+      
+      <div class="card" data-section="users">
+        <div class="card-icon">👥</div>
+        <div class="card-title">Пользователи</div>
+      </div>
+      
+      <div class="card" data-section="status">
+        <div class="card-icon">📡</div>
+        <div class="card-title">Состояние соединения</div>
+      </div>
+      
+      <div class="card" data-section="support">
+        <div class="card-icon">💬</div>
+        <div class="card-title">Написать Беатриске</div>
+      </div>
+    </div>
 
-    <див класс="меню-сетка">
-      <див класс="карта" онклик="навигация('профиль')">
-        <див класс="карточный значок">👤</див>
-        <див класс="название карты">Мой аккаунт</див>
-      </див>
+    <!-- Секция Пользователи -->
+    <div id="users-section" class="section">
+      <h2 style="margin: 25px 0 15px 0; text-align: center;">👥 Действующие пользователи</h2>
+      <div id="users-list" class="users-list">
+        <p style="color: #aaa; text-align: center; padding: 40px 20px;">
+          Нажмите на кнопку «Пользователи» для загрузки списка
+        </p>
+      </div>
+    </div>
 
-      <див класс="карта" онклик="навигация('подписки')">
-        <див класс="карточный значок">📊</див>
-        <див класс="название карты">Мои подписки</див>
-      </див>
+  </div>
 
-      <див класс="карта" онклик="навигация('статус')">
-        <див класс="карточный значок">📡</див>
-        <див класс="название карты">Состояние соединения</див>
-      </див>
+  <script src="app.js?v=9.4"></script>
+</body>
+</html>
