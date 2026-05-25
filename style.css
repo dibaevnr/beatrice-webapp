@@ -1,230 +1,78 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Segoe UI', system-ui, sans-serif;
   background: linear-gradient(135deg, #0f001a, #2a0052);
   color: #fff;
   min-height: 100vh;
-  overflow-x: hidden;
 }
 
-.container {
-  padding: 20px;
-  max-width: 520px;
-  margin: 0 auto;
+.контейнер { прокладка: 20пх; максимальная ширина: 520пх; маржа: 0 авто; }
+
+.заголовок {
+  отображать: сгибать;
+  оправдать-содержание: пространство-между;
+  выравнивание элементов: центр;
+  маржа-дно: 20пх;
 }
 
-/* Header */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+.логотип {
+  размер шрифта: 28пх;
+  вес шрифта: смелый;
+  фон: линейный градиент(90градус, #c026d3, #8b5cf6);
+  -вебкит-фон-клип: текст;
+  -webkit-текст-заливка-цвет!: прозрачный;
 }
 
-.logo {
-  font-size: 28px;
-  font-weight: bold;
-  background: linear-gradient(90deg, #c026d3, #8b5cf6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.заголовок { размер шрифта: 24пх; выравнивание текста: центр; маржа: 15пх 0 25пх; }
+
+.профиль-карта {
+  фон: ргба(255,255,255,0,1);
+  радиус границы: 20пх;
+  прокладка: 25пх;
+  выравнивание текста: центр;
+  маржа-дно: 30пх;
+  граница: 1пх твердый ргба(255,255,255,0,15);
 }
 
-.title {
-  font-size: 24px;
-  text-align: center;
-  margin: 15px 0 25px;
-  font-weight: 600;
+.фото пользователя {
+  ширина: 110пх;
+  высота: 110пх;
+  радиус границы: 50%;
+  граница: 4пх твердый #c026d3;
+  маржа-дно: 15пх;
 }
 
-/* Профиль */
-.profile-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(12px);
-  border-radius: 24px;
-  padding: 25px;
-  text-align: center;
-  margin-bottom: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+.сетка меню {
+  отображать: сетка;
+  сетка-шаблон-столбцы: 1фр 1фр;
+  зазор: 16пх;
 }
 
-.user-photo {
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid #c026d3;
-  margin-bottom: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+.карта {
+  фон: ргба(255,255,255,0,08);
+  радиус границы: 18пх;
+  прокладка: 20пх 10пх;
+  выравнивание текста: центр;
+  курсор: указатель;
+  переход: 0,3s;
+  граница: 1пх твердый ргба(255,255,255,0,1);
 }
 
-#user-name {
-  font-size: 22px;
-  margin-bottom: 6px;
+.карта:зависнуть {
+  фон: ргба(255,255,255,0,18);
+  трансформировать: переводY(-5пх);
 }
 
-#user-username, #user-id {
-  font-size: 15px;
-  opacity: 0.8;
-  margin-bottom: 4px;
+.карточная икона { размер шрифта: 42пх; маржа-дно: 10пх; }
+.название карты { размер шрифта: 16пх; вес шрифта: 600; }
+
+.раздел {
+  отображать: никто;
+  фон: ргба(255,255,255,0,08);
+  радиус границы: 18пх;
+  прокладка: 20пх;
+  край-верх: 20пх;
 }
 
-/* Статистика */
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  margin-bottom: 25px;
-}
-
-.stat-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(12px);
-  border-radius: 18px;
-  padding: 18px;
-  text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.stat-number {
-  font-size: 28px;
-  font-weight: bold;
-  color: #c026d3;
-  margin-bottom: 4px;
-}
-
-.stat-label {
-  font-size: 14px;
-  opacity: 0.85;
-}
-
-/* Меню */
-.menu-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.card {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  border-radius: 20px;
-  padding: 22px 12px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-}
-
-.card:hover {
-  transform: translateY(-6px);
-  background: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 10px 25px rgba(192, 38, 211, 0.2);
-}
-
-.card-icon {
-  font-size: 42px;
-  margin-bottom: 10px;
-}
-
-.card-title {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-/* Секции */
-.section {
-  display: none;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  border-radius: 20px;
-  padding: 20px;
-  margin-top: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.refresh-btn {
-  background: #c026d3;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 12px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.refresh-btn:hover {
-  background: #db2777;
-  transform: scale(1.05);
-}
-
-/* Список пользователей */
-.users-list {
-  min-height: 150px;
-}
-
-.user-item {
-  background: rgba(255, 255, 255, 0.06);
-  padding: 15px;
-  border-radius: 16px;
-  margin-bottom: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.user-info strong {
-  font-size: 16px;
-}
-
-.user-info small {
-  opacity: 0.7;
-  font-size: 13px;
-}
-
-.user-status {
-  font-size: 14px;
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-weight: 500;
-}
-
-.online {
-  background: #22c55e;
-  color: #000;
-}
-
-.offline {
-  background: #666;
-  color: #fff;
-}
-
-.loading, .empty {
-  text-align: center;
-  padding: 40px 20px;
-  color: #aaa;
-  font-size: 15px;
-}
-
-/* Дополнительно */
-body {
-  padding-bottom: 80px;
-}
-
-html, body {
-  height: 100%;
-}
+.пустой { выравнивание текста: центр; цвет: #aaa; прокладка: 30пх 0; }
