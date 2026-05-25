@@ -1,5 +1,5 @@
 const tg = window.Telegram.WebApp;
-const VERSION = "11.3";
+const VERSION = "11.5";
 
 tg.expand();
 tg.setHeaderColor("#0f001a");
@@ -8,8 +8,8 @@ tg.setBackgroundColor("#0f001a");
 let allUsers = [];
 let selectedUser = null;
 
-// Инициализация Telegram пользователя
-function initTelegramUser() {
+// Инициализация
+function init() {
   const user = tg.initDataUnsafe?.user;
   if (user) {
     document.getElementById('user-name').textContent = user.first_name || 'Администратор';
@@ -34,49 +34,62 @@ function navigate(section) {
 
   if (section === 'users') {
     document.getElementById('users-section').style.display = 'block';
-    document.getElementById('users-list').innerHTML = '<p class="loading">🔄 Загрузка пользователей...</p>';
+    document.getElementById('users-list').innerHTML = '<p class="loading">🔄 Запрос данных из 3x-UI...</p>';
   } 
   else if (section === 'support') {
     document.getElementById('support-section').style.display = 'block';
-    document.getElementById('support-users-list').innerHTML = '<p class="loading">🔄 Загрузка списка для поддержки...</p>';
-    loadSupportUsers();
-  } 
-  else {
-    tg.showPopup({
-      title: "Запрос отправлен",
-      message: `Раздел "${section}" открыт`,
-      buttons: [{type: "ok"}]
-    });
+    document.getElementById('support-users-list').innerHTML = '<p class="loading">🔄 Загрузка списка...</p>';
+    tg.sendData(JSON.stringify({ action: "get_users", version: VERSION }));
   }
 }
 
-// Загрузка пользователей для поддержки
-function loadSupportUsers() {
-  tg.sendData(JSON.stringify({ action: "get_users", version: VERSION }));
-}
-
-// Приём данных от бота
+// Получение данных от бота
 tg.onEvent('webAppDataReceived', (event) => {
   try {
     const response = JSON.parse(event.data);
     
     if (response.action === 'users_data' || response.type === 'users') {
       allUsers = response.users || response.data || [];
-      
-      // Обновляем статистику на главном экране
+
       document.getElementById('total-users').textContent = allUsers.length;
-      const online = allUsers.filter(u => u.online).length;
+      const online = allUsers.filter(u => u.online === true).length;
       document.getElementById('online-users').textContent = online;
 
-      // Если открыт раздел поддержки — показываем список
+      if (document.getElementById('users-section').style.display !== 'none') {
+        renderUsers(allUsers);
+      }
       if (document.getElementById('support-section').style.display !== 'none') {
         renderSupportUsers(allUsers);
       }
     }
   } catch (e) {
-    console.error(e);
+    console.error("Ошибка данных:", e);
   }
 });
+
+function renderUsers(users) {
+  const container = document.getElementById('users-list');
+  if (!users || users.length === 0) {
+    container.innerHTML = '<p class="empty">Нет пользователей</p>';
+    return;
+  }
+
+  let html = '';
+  users.forEach(u => {
+    html += `
+      <div class="user-item">
+        <div class="user-info">
+          <strong>${u.email || u.username || 'Без имени'}</strong><br>
+          <small>${u.expiry ? new Date(u.expiry*1000).toLocaleDateString('ru-RU') : 'Без срока'}</small>
+        </div>
+        <div class="user-status ${u.online ? 'online' : 'offline'}">
+          ${u.online ? '● Онлайн' : '○ Офлайн'}
+        </div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
 
 function renderSupportUsers(users) {
   const container = document.getElementById('support-users-list');
@@ -86,15 +99,14 @@ function renderSupportUsers(users) {
   }
 
   let html = '';
-  users.forEach(user => {
+  users.forEach(u => {
     html += `
-      <div class="user-item" onclick="selectUser(${JSON.stringify(user)})">
+      <div class="user-item" onclick='selectUser(${JSON.stringify(u)})'>
         <div class="user-info">
-          <strong>${user.email || user.username || 'Без имени'}</strong><br>
-          <small>ID: ${user.id || '—'}</small>
+          <strong>${u.email || u.username || 'Без имени'}</strong>
         </div>
-        <div class="user-status ${user.online ? 'online' : 'offline'}">
-          ${user.online ? '● Онлайн' : '○ Офлайн'}
+        <div class="user-status ${u.online ? 'online' : 'offline'}">
+          ${u.online ? '●' : '○'}
         </div>
       </div>
     `;
@@ -104,32 +116,22 @@ function renderSupportUsers(users) {
 
 function selectUser(user) {
   selectedUser = user;
-  document.getElementById('selected-user').textContent = user.email || user.username || 'Пользователь';
+  document.getElementById('selected-user').textContent = user.email || user.username;
   document.getElementById('message-box').style.display = 'block';
-  document.getElementById('support-message').focus();
 }
 
 function sendSupportMessage() {
-  const message = document.getElementById('support-message').value.trim();
-  if (!message || !selectedUser) return;
+  const msg = document.getElementById('support-message').value.trim();
+  if (!msg || !selectedUser) return;
 
   tg.sendData(JSON.stringify({
     action: "send_support_message",
-    user_id: selectedUser.id || selectedUser.email,
-    username: selectedUser.email || selectedUser.username,
-    message: message,
-    timestamp: Date.now()
+    user: selectedUser.email || selectedUser.username,
+    message: msg
   }));
 
-  tg.showPopup({
-    title: "Сообщение отправлено",
-    message: `Сообщение пользователю ${selectedUser.email || selectedUser.username} отправлено`,
-    buttons: [{type: "ok"}]
-  });
-
-  // Очистка
-  document.getElementById('support-message').value = '';
-  document.getElementById('message-box').style.display = 'none';
+  tg.showPopup({title: "Отправлено", message: "Сообщение отправлено", buttons: [{type:"ok"}]});
+  cancelMessage();
 }
 
 function cancelMessage() {
@@ -137,9 +139,9 @@ function cancelMessage() {
   document.getElementById('support-message').value = '';
 }
 
-// Инициализация
+// Запуск
 document.addEventListener('DOMContentLoaded', () => {
-  initTelegramUser();
+  init();
 
   document.querySelectorAll('.card').forEach(card => {
     card.addEventListener('click', () => {
